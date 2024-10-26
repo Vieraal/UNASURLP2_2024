@@ -1,6 +1,6 @@
-package py.edu.unasur;
+package py.edu.unasur.resource;
 
-public class Parcial Ejercicio 1 {
+public class Ejercicio 1 {
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
@@ -23,5 +23,4 @@ public class AlgorithmsResource {
         }
         return Response.ok(sum).build();  // Retorna la suma en formato JSON
     }
-}
 }

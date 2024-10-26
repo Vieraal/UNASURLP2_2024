@@ -1,4 +1,4 @@
-package py.edu.unasur;
+package py.edu.unasur.resources;
 
 public class Parcial Ejercicio 1 {
 import java.util.ArrayList;
