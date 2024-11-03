@@ -1,4 +1,4 @@
-package py.edu.unasur.resources;
+package py.edu.unasur.resource;
 
 import java.util.ArrayList;
 import java.util.Collections;
