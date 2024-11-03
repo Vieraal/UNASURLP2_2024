@@ -1,10 +1,13 @@
+Package py.edu.unasur.resources;
 
-package py.edu.unasur.resources;
-
-public class Parcial Ejercicio 1 {
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+
+import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
@@ -19,22 +22,25 @@ public class ParcialUnoResource {
     public String hello() {
         return "Hola desde LP2";
     }
-    
+
+    // Generar números primos
     @GET
-    @Path("/prime-numbers/{n}")
+    @Path("/algorithms/prime-numbers/{n}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response getPrimeNumbers(@PathParam("n") int n) {
+        if (n < 1) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("n debe ser mayor que 0").build();
+        }
+
         List<Integer> primes = new ArrayList<>();
-        int count = 0;
         int number = 2;
-        while (count < n) {
+        while (primes.size() < n) {
             if (isPrime(number)) {
                 primes.add(number);
-                count++;
             }
             number++;
         }
-        return Response.ok( primes).build();
+        return Response.ok(primes).build();
     }
 
     private boolean isPrime(int num) {
@@ -45,581 +51,187 @@ public class ParcialUnoResource {
         return true;
     }
 
+    // Suma de Dígitos
     @GET
-    @Path("/sum-digits/{number}")
+    @Path("/algorithms/sum-digits/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response sumDigits(@PathParam("number") int number) {
+        return Response.ok(calculateDigitSum(Math.abs(number))).build();
+    }
+
+    private int calculateDigitSum(int num) {
         int sum = 0;
-        int num = Math.abs(number);
         while (num > 0) {
             sum += num % 10;
             num /= 10;
         }
-        return Response.ok( sum).build();
+        return sum;
     }
-}
 
-
-/*public class Parcial Ejercicio 1 {
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-//ejercicio
+    // Secuencia de Fibonacci
     @GET
-    @Path("/sum-digits/{number}")
+    @Path("/algorithms/fibonacci/{n}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sumDigits(@PathParam("number") int number) {
-        int sum = 0;
-        int num = Math.abs(number);  // Maneja números negativos
-        while (num > 0) {
-            sum += num % 10;
-            num /= 10;
+    public Response getFibonacci(@PathParam("n") int n) {
+        if (n < 0) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("n debe ser no negativo").build();
         }
-        return Response.ok(sum).build();  // Retorna la suma en formato JSON
-    }
-}
-
-
-/*public class Parcial Ejercicio 3
-import java.util.ArrayList;
-import java.util.List;
-
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response; */
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
-    @GET
-    @Path("/fibonacci/{n}")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response getFibonacciSequence(@PathParam("n") int n) {
-        List<Integer> fibonacciSequence = new ArrayList<>();
         
-        // Generar la secuencia de Fibonacci
+        List<Integer> fibonacci = new ArrayList<>();
+        int a = 0, b = 1;
         for (int i = 0; i < n; i++) {
-            fibonacciSequence.add(fibonacci(i));
+            fibonacci.add(a);
+            int next = a + b;
+            a = b;
+            b = next;
         }
-
-        return Response.ok(fibonacciSequence).build();  // Retorna la secuencia en formato JSON
+        return Response.ok(fibonacci).build();
     }
 
-    // Método para calcular el número de Fibonacci en la posición i
-    private int fibonacci(int i) {
-        if (i <= 1) return i;
-        return fibonacci(i - 1) + fibonacci(i - 2);
-    }
-}
-
-
-
-/*public class Parcial Ejercicio 4 {
-    import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import java.util.Arrays;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Ordenar Arreglo
     @POST
-    @Path("/sort")
+    @Path("/algorithms/sort")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response sortArray(NumbersRequest request) {
-        int[] numbers = request.getNumbers();
+    public Response sortArray(Map<String, List<Integer>> body) {
+        List<Integer> numbers = body.get("numbers");
         
-        // Ordenar el arreglo usando Quicksort
-        quicksort(numbers, 0, numbers.length - 1);
+        if (numbers == null || numbers.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("La lista no puede estar vacía").build();
+        }
         
-        return Response.ok(numbers).build();  // Retornar el arreglo ordenado en formato JSON
+        Collections.sort(numbers);
+        return Response.ok(numbers).build();
     }
 
-    // Método para realizar QuickSort en el arreglo
-    private void quicksort(int[] array, int low, int high) {
-        if (low < high) {
-            int pi = partition(array, low, high);
-            quicksort(array, low, pi - 1);
-            quicksort(array, pi + 1, high);
-        }
-    }
-
-    private int partition(int[] array, int low, int high) {
-        int pivot = array[high];
-        int i = (low - 1);
-        for (int j = low; j < high; j++) {
-            if (array[j] <= pivot) {
-                i++;
-                int temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
-            }
-        }
-        int temp = array[i + 1];
-        array[i + 1] = array[high];
-        array[high] = temp;
-        return i + 1;
-    }
-}
-
-// Clase para el cuerpo de la solicitud POST
-class NumbersRequest {
-    private int[] numbers;
-
-    public int[] getNumbers() {
-        return numbers;
-    }
-
-    public void setNumbers(int[] numbers) {
-        this.numbers = numbers;
-    }
-}
-    
-
-
-
-/*public class Parcial Ejercicio 4 {
-    import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import java.util.Arrays;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
-    @POST
-    @Path("/sort")
-    @Consumes(MediaType.APPLICATION_JSON)
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response sortArray(NumbersRequest request) {
-        int[] numbers = request.getNumbers();
-        
-        // Ordenar el arreglo usando Quicksort
-        quicksort(numbers, 0, numbers.length - 1);
-        
-        return Response.ok(numbers).build();  // Retornar el arreglo ordenado en formato JSON
-    }
-
-    // Método para realizar QuickSort en el arreglo
-    private void quicksort(int[] array, int low, int high) {
-        if (low < high) {
-            int pi = partition(array, low, high);
-            quicksort(array, low, pi - 1);
-            quicksort(array, pi + 1, high);
-        }
-    }
-
-    private int partition(int[] array, int low, int high) {
-        int pivot = array[high];
-        int i = (low - 1);
-        for (int j = low; j < high; j++) {
-            if (array[j] <= pivot) {
-                i++;
-                int temp = array[i];
-                array[i] = array[j];
-                array[j] = temp;
-            }
-        }
-        int temp = array[i + 1];
-        array[i + 1] = array[high];
-        array[high] = temp;
-        return i + 1;
-    }
-}
-
-// Clase para el cuerpo de la solicitud POST
-class NumbersRequest {
-    private int[] numbers;
-
-    public int[] getNumbers() {
-        return numbers;
-    }
-
-    public void setNumbers(int[] numbers) {
-        this.numbers = numbers;
-    }
-}
-    
-
-
-
-
-/*public class Parcila Ejercicio 5 {
-    import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Número Capicúa
     @GET
-    @Path("/palindrome/{number}")
+    @Path("/algorithms/palindrome/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response isPalindrome(@PathParam("number") int number) {
-        boolean result = isPalindromeNumber(number);
-        return Response.ok(result).build();  // Retorna true si es capicúa, false si no
+        String strNum = String.valueOf(Math.abs(number));
+        String reversed = new StringBuilder(strNum).reverse().toString();
+        boolean result = strNum.equals(reversed);
+        return Response.ok(result).build();
     }
 
-    // Método que determina si un número es capicúa (palíndromo)
-    private boolean isPalindromeNumber(int number) {
-        int originalNumber = Math.abs(number);  // Para manejar números negativos
-        int reversedNumber = 0;
-        int temp = originalNumber;
-
-        while (temp > 0) {
-            int lastDigit = temp % 10;
-            reversedNumber = reversedNumber * 10 + lastDigit;
-            temp /= 10;
-        }
-
-        return originalNumber == reversedNumber;
-    }
-}
-
-    
-
-
-
-
-/*public class Parcial Ejercicio 6 {
-    import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Potencia de un Número
     @POST
-    @Path("/power")
+    @Path("/algorithms/power")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response calculatePower(PowerRequest request) {
-        int base = request.getBase();
-        int exponent = request.getExponent();
-        
-        // Calcular la potencia
-        double result = Math.pow(base, exponent);
-        
-        return Response.ok(result).build();  // Retorna el resultado en formato JSON
-    }
-}
+    public Response power(Map<String, Integer> body) {
+        Integer base = body.get("base");
+        Integer exponent = body.get("exponent");
 
-// Clase para el cuerpo de la solicitud POST
-class PowerRequest {
-    private int base;
-    private int exponent;
+        if (base == null || exponent == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Faltan parámetros").build();
+        }
 
-    public int getBase() {
-        return base;
+        int result = (int) Math.pow(base, exponent);
+        return Response.ok(result).build();
     }
 
-    public void setBase(int base) {
-        this.base = base;
-    }
-
-    public int getExponent() {
-        return exponent;
-    }
-
-    public void setExponent(int exponent) {
-        this.exponent = exponent;
-    }
-}
-
-    
-
-
-
-/*public class Parcial Ejercicio 7 {
-    import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Número Perfecto
     @GET
-    @Path("/perfect-number/{number}")
+    @Path("/algorithms/perfect-number/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response isPerfectNumber(@PathParam("number") int number) {
-        boolean result = isPerfect(number);
-        return Response.ok(result).build();  // Retorna true si es perfecto, false si no
+        int sum = calculateDivisorSum(number);
+        boolean result = (sum == number);
+        return Response.ok(result).build();
     }
 
-    // Método que determina si un número es perfecto
-    private boolean isPerfect(int number) {
-        if (number <= 1) return false;
-
-        int sumOfDivisors = 0;
-
-        // Calcular la suma de los divisores propios
-        for (int i = 1; i <= number / 2; i++) {
+    private int calculateDivisorSum(int number) {
+        int sum = 0;
+        for (int i = 1; i < number; i++) {
             if (number % i == 0) {
-                sumOfDivisors += i;
+                sum += i;
             }
         }
-
-        // Un número es perfecto si es igual a la suma de sus divisores propios
-        return sumOfDivisors == number;
+        return sum;
     }
-}
 
-  
-
-
-
-/*public class Parcial Ejercicio 8 {
-    import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Calcular Factorial
     @GET
-    @Path("/factorial/{number}")
+    @Path("/algorithms/factorial/{number}")
     @Produces(MediaType.APPLICATION_JSON)
-    public Response calculateFactorial(@PathParam("number") int number) {
-        if (number < 0) {
-            return Response.status(Response.Status.BAD_REQUEST)
-                           .entity("El número debe ser no negativo").build();
-        }
-
-        long factorial = factorial(number);
-        return Response.ok(factorial).build();  // Retorna el factorial en formato JSON
+    public Response factorial(@PathParam("number") int number) {
+        if (number < 0) return Response.status(Response.Status.BAD_REQUEST).entity("Número no puede ser negativo").build();
+        long result = calculateFactorial(number);
+        return Response.ok(result).build();
     }
 
-    // Método para calcular el factorial de un número
-    private long factorial(int number) {
+    private long calculateFactorial(int number) {
         long result = 1;
         for (int i = 1; i <= number; i++) {
             result *= i;
         }
         return result;
     }
-}
 
-
-
-
-/*public class Parcial Ejercicio 9 {
-    import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Sumatoria de Arreglo
     @POST
-    @Path("/sum-array")
+    @Path("/algorithms/sum-array")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response calculateSum(SumRequest request) {
-        int[] numbers = request.getNumbers();
-        
-        // Calcular la sumatoria
-        int sum = 0;
-        for (int number : numbers) {
-            sum += number;
+    public Response sumArray(List<Integer> numbers) {
+        if (numbers == null || numbers.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("La lista no puede estar vacía").build();
         }
-        
-        return Response.ok(sum).build();  // Retorna la sumatoria en formato JSON
-    }
-}
-
-// Clase para el cuerpo de la solicitud POST
-class SumRequest {
-    private int[] numbers;
-
-    public int[] getNumbers() {
-        return numbers;
+        int sum = numbers.stream().mapToInt(Integer::intValue).sum();
+        return Response.ok(sum).build();
     }
 
-    public void setNumbers(int[] numbers) {
-        this.numbers = numbers;
-    }
-}
-  
-
-
-
-/*public class Parcial Ejercicio 10 {
-    import jakarta.ws.rs.Consumes;
-import jakarta.ws.rs.POST;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Máximo Común Divisor (MCD)
     @POST
-    @Path("/gcd")
+    @Path("/algorithms/gcd")
     @Consumes(MediaType.APPLICATION_JSON)
     @Produces(MediaType.APPLICATION_JSON)
-    public Response calculateGCD(GcdRequest request) {
-        int a = request.getA();
-        int b = request.getB();
-        
-        // Calcular el MCD usando el algoritmo de Euclides
-        int gcd = gcd(a, b);
-        
-        return Response.ok(gcd).build();  // Retorna el MCD en formato JSON
-    }
+    public Response gcd(Map<String, Integer> body) {
+        Integer a = body.get("a");
+        Integer b = body.get("b");
 
-    // Método para calcular el MCD usando el algoritmo de Euclides
-    private int gcd(int a, int b) {
+        if (a == null || b == null) {
+            return Response.status(Response.Status.BAD_REQUEST).entity("Faltan parámetros").build();
+        }
+
         while (b != 0) {
             int temp = b;
             b = a % b;
             a = temp;
         }
-        return Math.abs(a);  // Retorna el MCD como un número positivo
-    }
-}
-
-// Clase para el cuerpo de la solicitud POST
-class GcdRequest {
-    private int a;
-    private int b;
-
-    public int getA() {
-        return a;
+        return Response.ok(a).build();
     }
 
-    public void setA(int a) {
-        this.a = a;
-    }
-
-    public int getB() {
-        return b;
-    }
-
-    public void setB(int b) {
-        this.b = b;
-    }
-}
-  
-
-
-
-/*public class Parcial Ejercicio 11 {
-    import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Número Armstrong
     @GET
-    @Path("/armstrong/{number}")
+    @Path("/algorithms/armstrong/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response isArmstrong(@PathParam("number") int number) {
-        boolean result = isArmstrongNumber(number);
-        return Response.ok(result).build();  // Retorna true si es un número Armstrong, false si no
+        int original = number;
+        int sum = calculateArmstrongSum(number);
+        boolean result = (sum == original);
+        return Response.ok(result).build();
     }
 
-    // Método que determina si un número es Armstrong
-    private boolean isArmstrongNumber(int number) {
-        int originalNumber = number;
+    private int calculateArmstrongSum(int number) {
         int sum = 0;
-        int numberOfDigits = String.valueOf(number).length();
-
-        // Calcular la suma de los dígitos elevados a la potencia del número de dígitos
+        int digits = String.valueOf(number).length();
         while (number > 0) {
             int digit = number % 10;
-            sum += Math.pow(digit, numberOfDigits);
+            sum += Math.pow(digit, digits);
             number /= 10;
         }
-
-        // Un número es Armstrong si es igual a la suma calculada
-        return originalNumber == sum;
+        return sum;
     }
-}
-  
 
-
-
-/*public class Parcial Ejercico 12 {
-    import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Path;
-import jakarta.ws.rs.PathParam;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;*/
-
-@Path("/api/algorithms")
-public class AlgorithmsResource {
-
+    // Convertir Número a Binario
     @GET
-    @Path("/convert-to-binary/{number}")
+    @Path("/algorithms/convert-to-binary/{number}")
     @Produces(MediaType.APPLICATION_JSON)
     public Response convertToBinary(@PathParam("number") int number) {
-        String binaryRepresentation = Integer.toBinaryString(number);
-        return Response.ok(binaryRepresentation).build();  // Retorna la representación binaria en formato JSON
+        String binary = Integer.toBinaryString(number);
+        return Response.ok(binary).build();
     }
-
-    @GET
-    @Path("/convert-to-binary")
-    @Produces(MediaType.APPLICATION_JSON)
-    public Response convertMultipleToBinary(MultipleNumbersRequest request) {
-        int[] numbers = request.getNumbers();
-        String[] binaryRepresentations = new String[numbers.length];
-
-        for (int i = 0; i < numbers.length; i++) {
-            binaryRepresentations[i] = Integer.toBinaryString(numbers[i]);
-        }
-
-        return Response.ok(binaryRepresentations).build();  // Retorna las representaciones binarias en formato JSON
-    }
-}
-
-// Clase para el cuerpo de la solicitud para múltiples números
-class MultipleNumbersRequest {
-    private int[] numbers;
-
-    public int[] getNumbers() {
-        return numbers;
-    }
-
-    public void setNumbers(int[] numbers) {
-        this.numbers = numbers;
-    }
-}
-
 }
