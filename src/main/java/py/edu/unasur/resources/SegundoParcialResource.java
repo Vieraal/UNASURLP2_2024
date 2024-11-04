@@ -1,9 +1,11 @@
-// Importaciones necesarias
-import javax.inject.Inject; // Para la inyección de dependencias
-import javax.ws.rs.*; // Para las anotaciones de JAX-RS
-import javax.ws.rs.core.MediaType; // Para definir el tipo de contenido
-import javax.ws.rs.core.Response; // Para manejar respuestas HTTP
-import java.util.List; // Para manejar listas de cadenas
+package py.edu.unasur.resources;
+
+import java.util.List;
+import jakarta.inject.Inject; // Para la inyección de dependencias
+import jakarta.ws.rs.*; // Para las anotaciones de JAX-RS
+import jakarta.ws.rs.core.MediaType; // Para definir el tipo de contenido
+import jakarta.ws.rs.core.Response; // Para manejar respuestas HTTP
+import py.edu.unasur.services.SegundoParcialService; // Asegúrate de que esta clase esté en el paquete correcto
 
 @Path("/segundo-parcial") // Define la ruta del recurso REST
 public class SegundoParcialResource {
