@@ -15,7 +15,7 @@ import py.edu.unasur.models.GastosArchivo;
 @ApplicationScoped
 public class GastosArchivoRepository {
     private static final String FILE_PATH = "src/main/resources/data.json";
-    private GastosArchivo gasto;
+    private GastosArchivo gastos;
     private ObjectMapper mapper;
     private List<GastosArchivo> lista;
     

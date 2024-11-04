@@ -1,4 +1,5 @@
 // Importaciones necesarias
+
 import javax.enterprise.context.ApplicationScoped; // Para definir el alcance de la aplicación
 import java.util.List; // Para manejar listas
 import java.util.stream.Collectors; // Para la manipulación de listas con Streams
