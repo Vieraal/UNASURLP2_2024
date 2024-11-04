@@ -62,3 +62,4 @@ public class SegundoParcialResourceTest {
         return new StringBuilder(texto).reverse().toString().equals(texto);
     }
 }
+
