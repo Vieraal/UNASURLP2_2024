@@ -7,6 +7,14 @@
 
 [Tarea 4](tarea4.md)
 
+[Tarea 5](tarea5.md)
+
+[Tarea 6](tarea6.md)
+
+[Tarea 7](tarea7.md)
+
+[Tarea 8](tarea8.md)
+
 
 # presupuesto mensual
 
