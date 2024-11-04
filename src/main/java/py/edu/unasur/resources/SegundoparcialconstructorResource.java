@@ -8,8 +8,8 @@ import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response; // Importación de SegundoParcialService
-import py.edu.unasur.services.SegundoParcialService; // Importación de List
+import jakarta.ws.rs.core.Response;
+import py.edu.unasur.services.SegundoParcialService;
 
 @Path("/segundo-parcial-constructor")
 @Produces(MediaType.APPLICATION_JSON)
