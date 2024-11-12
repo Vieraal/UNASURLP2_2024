@@ -1,4 +1,4 @@
-package  py.edu.unasur.repositories;
+package py.edu.unasur.repositories;
 
 import java.io.File;
 import java.io.IOException;
@@ -14,66 +14,70 @@ import py.edu.unasur.models.GastosArchivo;
 
 @ApplicationScoped
 public class GastosArchivoRepository {
-    private static final String FILE_PATH = "src/main/resources/data.json";
-    private GastosArchivo gastos;
+
+    private static final String FILE_PATH = "src/main/resources/data.json"; // Asegúrate de que este path sea correcto
     private ObjectMapper mapper;
     private List<GastosArchivo> lista;
-    
-    public GastosArchivoRepository(){
+
+    public GastosArchivoRepository() {
         mapper = new ObjectMapper();
-        lista = cargarDato();
+        this.lista = cargarDato(); // Carga los datos al iniciar el repositorio
     }
 
-    public List<GastosArchivo> cargarDato(){
-        try {
-            File data = new File(FILE_PATH); 
-            if (data.exists()) {
-                return mapper.readValue(data, new TypeReference<List<GastosArchivo>>() 
-                {});
-
-            }else{
-                return new ArrayList<>();
+    // Carga los datos desde el archivo JSON, si existe
+    public List<GastosArchivo> cargarDato() {
+        File dataFile = new File(FILE_PATH);
+        if (dataFile.exists()) {
+            try {
+                return mapper.readValue(dataFile, new TypeReference<List<GastosArchivo>>() {});
+            } catch (IOException e) {
+                e.printStackTrace();
             }
-            
-        } catch (IOException e) {
-            return new ArrayList<>();
         }
-    
+        return new ArrayList<>(); // Si no existe el archivo, retorna una lista vacía
     }
 
-    public void guardarDato(GastosArchivo param){
-        try {
-            List<GastosArchivo> newLista = this.lista;
-            GastosArchivo busquedaGasto = findById(param.getId());
-            if (busquedaGasto==null) {
-                newLista.add(param);
-                mapper.writeValue(new File(FILE_PATH), newLista);
-            }
-          
-        } catch (Exception e) {
-            e.printStackTrace();
+    // Guarda un nuevo dato en la lista y persiste el archivo
+    public void guardarDato(GastosArchivo param) {
+        GastosArchivo existingGasto = findById(param.getId());
+        if (existingGasto == null) {  // Si no existe un gasto con el mismo ID
+            lista.add(param); // Agrega el nuevo gasto a la lista
+            persistirDatos(); // Guarda la lista actualizada en el archivo
         }
     }
 
-    public GastosArchivo findById(Integer id){
+    // Encuentra un gasto por ID
+    public GastosArchivo findById(Integer id) {
         return lista.stream()
-        .filter( gasto -> gasto.getId().equals(id))
-        .findFirst()
-        .orElse(null); 
+            .filter(gasto -> gasto.getId().equals(id))
+            .findFirst()
+            .orElse(null); // Devuelve null si no se encuentra el gasto
     }
 
-    public List<GastosArchivo> findAll(){
-        return  new ArrayList<>(lista);
+    // Devuelve todos los gastos
+    public List<GastosArchivo> findAll() {
+        return new ArrayList<>(lista); // Retorna una copia de la lista
     }
 
-    public void delete(Integer id){
+    // Elimina un gasto por ID
+    public void delete(Integer id) {
         lista = lista.stream()
-        .filter(gasto -> !gasto.getId().equals(id))
-        .collect(Collectors.toList());
+            .filter(gasto -> !gasto.getId().equals(id)) // Filtra los gastos que no tienen el ID a eliminar
+            .collect(Collectors.toList());
+        persistirDatos(); // Guarda la lista actualizada en el archivo
+    }
+
+    // Método privado para persistir la lista de gastos en el archivo
+    private void persistirDatos() {
         try {
-            mapper.writeValue(new File(FILE_PATH), lista);
-        } catch (Exception e) {
-            e.printStackTrace();
+            File dataFile = new File(FILE_PATH);
+            // Asegúrate de que el directorio existe
+            if (!dataFile.getParentFile().exists()) {
+                dataFile.getParentFile().mkdirs();
+            }
+            mapper.writeValue(dataFile, lista); // Escribe la lista de gastos en el archivo
+        } catch (IOException e) {
+            e.printStackTrace(); // Maneja la excepción adecuadamente
         }
     }
 }
