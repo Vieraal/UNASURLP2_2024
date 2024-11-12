@@ -1,10 +1,10 @@
-// Importaciones necesarias
+package py.edu.unasur.services; // Asegúrate de que el paquete esté correcto
 
-import javax.enterprise.context.ApplicationScoped; // Para definir el alcance de la aplicación
-import java.util.List; // Para manejar listas
-import java.util.stream.Collectors; // Para la manipulación de listas con Streams
+import jakarta.enterprise.context.ApplicationScoped; // Cambié el import a jakarta
+import java.util.List;
+import java.util.stream.Collectors;
 
-@ApplicationScoped // Indica que esta clase se utilizará como un bean de aplicación
+@ApplicationScoped // Anotación CDI para marcar la clase como bean de aplicación
 public class SegundoParcialService {
 
     public ResultadoPalindromos contarPalindromos(List<String> lista) {
