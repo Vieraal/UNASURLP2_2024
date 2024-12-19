@@ -1,4 +1,4 @@
-package py.edu.unasur.services;
+package py.edu.unasur.resources;
 
 import java.util.List;
 import java.util.Objects;
