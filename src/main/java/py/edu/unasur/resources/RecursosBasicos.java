@@ -16,6 +16,7 @@ import py.edu.unasur.models.resutls.TestResult;
 
 @Path("/api/recursos-basicos")
 public class RecursosBasicos {
+
     @GET
     @Produces(MediaType.TEXT_PLAIN)
     public String hello() {
@@ -58,7 +59,6 @@ public class RecursosBasicos {
     @Path("/con-body-hash")
     @Produces(MediaType.TEXT_PLAIN)
     public String segundoPostConBody(HashMap<String, Object> param) {
-
         System.out.println(param.get("test"));
         return "Primer post con body ";
     }
@@ -67,7 +67,6 @@ public class RecursosBasicos {
     @Path("/con-body-param")
     @Produces(MediaType.TEXT_PLAIN)
     public String tercerPostConBody(PostConBodyParam param) {
-
         return "Primer post con body ";
     }
 
@@ -75,7 +74,6 @@ public class RecursosBasicos {
     @Path("/con-body-param/{id}")
     @Produces(MediaType.TEXT_PLAIN)
     public String cuartoPostConBody(PostConBodyParam param, @PathParam("id") Integer id) {
-
         return "Prime post con0 body ";
     }
 
@@ -89,11 +87,13 @@ public class RecursosBasicos {
         return respuesta;
     }
 
+    // Cambié aquí la declaración de Respuesta para usar Respuesta<TestResult> correctamente
     @GET
     @Path("/clase-generica-single")
     @Produces(MediaType.APPLICATION_JSON)
     public Respuesta<TestResult> getQueRetornaUnaClaseGenerica() {
-        Respuesta<TestResult> respuesta = new Respuesta();
+        // Especificamos el tipo correctamente al instanciar Respuesta
+        Respuesta<TestResult> respuesta = new Respuesta<TestResult>();
         respuesta.setCodigo(300);
         respuesta.setMensaje("EXITO");
 
@@ -109,7 +109,8 @@ public class RecursosBasicos {
     @Path("/clase-generica-complex")
     @Produces(MediaType.APPLICATION_JSON)
     public Respuesta<TestResult> getQueRetornaUnaClaseGenericaComplex() {
-        Respuesta<TestResult> respuesta = new Respuesta();
+        // Especificamos el tipo correctamente al instanciar Respuesta
+        Respuesta<TestResult> respuesta = new Respuesta<TestResult>();
         respuesta.setCodigo(300);
         respuesta.setMensaje("EXITO");
 
